@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Download Manifest</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper: #EFE4CC;
+    --card: #FBF6E9;
+    --ink: #2B2418;
+    --ink-soft: #6B5F49;
+    --stamp-red: #B23A2F;
+    --stamp-teal: #3C5B4E;
+    --line: #CBB98F;
+    --line-soft: #DCCFA8;
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+
+  body{
+    background: var(--paper);
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(43,36,24,0.06) 1px, transparent 0);
+    background-size: 22px 22px;
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    padding: 48px 20px 80px;
+  }
+
+  .wrap{ max-width: 760px; margin: 0 auto; }
+
+  /* ---------- Header ---------- */
+  header{
+    position: relative;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 28px;
+    margin-bottom: 44px;
+  }
+
+  .eyebrow{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    color: var(--stamp-teal);
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  .eyebrow::before{ content: "◆ "; }
+
+  h1{
+    font-family: 'Special Elite', cursive;
+    font-size: clamp(34px, 6vw, 54px);
+    line-height: 1.05;
+    letter-spacing: 0.01em;
+    max-width: 80%;
+  }
+
+  .subtitle{
+    margin-top: 10px;
+    color: var(--ink-soft);
+    font-size: 15px;
+    max-width: 480px;
+  }
+
+  .postmark{
+    position: absolute;
+    top: -6px;
+    right: 0;
+    width: 116px;
+    height: 116px;
+    transform: rotate(-9deg);
+    color: var(--stamp-red);
+    opacity: 0.92;
+  }
+
+  .postmark svg{ width: 100%; height: 100%; display:block; }
+
+  /* ---------- List ---------- */
+  .list{
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .card{
+    position: relative;
+    background: var(--card);
+    border: 1.5px solid var(--ink);
+    border-radius: 3px;
+    padding: 20px 24px 20px 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    box-shadow: 3px 3px 0 rgba(43,36,24,0.10);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .card:hover{
+    transform: translate(-2px,-2px);
+    box-shadow: 5px 5px 0 rgba(43,36,24,0.14);
+  }
+
+  /* perforated left edge */
+  .card::before{
+    content:"";
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 10px;
+    background-image: radial-gradient(circle, var(--paper) 2.5px, transparent 2.6px);
+    background-size: 10px 14px;
+    background-position: 0 4px;
+    border-right: 1.5px dashed var(--line);
+  }
+
+  .file-main{ min-width: 0; }
+
+  .tracking{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--stamp-red);
+    letter-spacing: 0.08em;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .file-name{
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--ink);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .file-meta{
+    margin-top: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .file-meta span:not(:last-child)::after{
+    content: "·";
+    margin-left: 10px;
+    color: var(--line);
+  }
+
+  .dl-btn{
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-decoration: none;
+    color: var(--card);
+    background: var(--stamp-teal);
+    border: 1.5px solid var(--ink);
+    border-radius: 999px;
+    padding: 10px 18px;
+    white-space: nowrap;
+    transition: background 0.15s ease, transform 0.1s ease;
+  }
+
+  .dl-btn:hover{ background: var(--stamp-red); transform: scale(1.03); }
+  .dl-btn:active{ transform: scale(0.98); }
+  .dl-btn svg{ width: 14px; height: 14px; }
+
+  /* ---------- Footer ---------- */
+  footer{
+    margin-top: 56px;
+    padding-top: 20px;
+    border-top: 1px dashed var(--line);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .empty{
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--ink-soft);
+    font-size: 14px;
+    padding: 30px 0;
+  }
+
+  @media (max-width: 560px){
+    .postmark{ width: 84px; height: 84px; top: -2px; }
+    h1{ max-width: 100%; }
+    .card{ flex-direction: column; align-items: flex-start; gap: 14px; }
+    .dl-btn{ width: 100%; justify-content: center; }
+    .file-name{ white-space: normal; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Download manifest</div>
+    <h1 id="appName">Название приложения</h1>
+    <p class="subtitle" id="appSubtitle">Все файлы для скачивания собраны здесь.</p>
+    <div class="postmark" id="postmark"></div>
+  </header>
+
+  <div class="list" id="fileList"></div>
+
+  <footer>
+    <span id="lastUpdatedFooter"></span>
+    <span>Файлы хранятся на Google Drive</span>
+  </footer>
+</div>
+
+<script>
+  /* =========================================================
+     НАСТРОЙКИ — редактируйте здесь
+     =========================================================
+     1. APP_NAME       — название приложения / сайта
+     2. APP_SUBTITLE   — короткое описание под заголовком
+     3. FILES          — список файлов. Для каждого укажите:
+          name     — отображаемое имя файла
+          version  — версия или ярлык (необязательно, можно "")
+          date     — дата обновления, напр. "17.07.2026"
+          size     — размер, напр. "24 МБ"
+          driveId  — ID файла из ссылки Google Drive
+
+     Как получить driveId:
+       Ссылка вида https://drive.google.com/file/d/ЭТО_ID/view
+       Файл должен быть открыт "Все, у кого есть ссылка".
+     ========================================================= */
+
+  const APP_NAME = "Название приложения";
+  const APP_SUBTITLE = "Все файлы для скачивания собраны здесь.";
+
+  const FILES = [
+    {
+      name: "app-setup-win.exe",
+      version: "v1.4.0",
+      date: "17.07.2026",
+      size: "48 МБ",
+      driveId: "ВСТАВЬТЕ_ID_ФАЙЛА_1"
+    },
+    {
+      name: "app-setup-mac.dmg",
+      version: "v1.4.0",
+      date: "17.07.2026",
+      size: "52 МБ",
+      driveId: "ВСТАВЬТЕ_ID_ФАЙЛА_2"
+    },
+    {
+      name: "user-guide.pdf",
+      version: "",
+      date: "02.06.2026",
+      size: "3.1 МБ",
+      driveId: "ВСТАВЬТЕ_ID_ФАЙЛА_3"
+    }
+  ];
+
+  /* ========================================================= */
+
+  document.getElementById('appName').textContent = APP_NAME;
+  document.getElementById('appSubtitle').textContent = APP_SUBTITLE;
+  document.title = APP_NAME + " — Downloads";
+
+  function driveDownloadUrl(id){
+    return `https://drive.google.com/uc?export=download&id=${id}`;
+  }
+
+  function latestDate(files){
+    if(!files.length) return "";
+    // best-effort: just take the first entry's date as "last updated"
+    return files[0].date;
+  }
+
+  function renderPostmark(dateLabel){
+    const el = document.getElementById('postmark');
+    el.innerHTML = `
+      <svg viewBox="0 0 120 120" fill="none">
+        <circle cx="60" cy="60" r="52" stroke="currentColor" stroke-width="2.5"/>
+        <circle cx="60" cy="60" r="44" stroke="currentColor" stroke-width="1.2"/>
+        <path id="arcTop" d="M 18 60 A 42 42 0 0 1 102 60" fill="none"/>
+        <path id="arcBottom" d="M 102 62 A 42 42 0 0 1 18 62" fill="none"/>
+        <text font-family="JetBrains Mono, monospace" font-size="9.5" font-weight="700" letter-spacing="2" fill="currentColor">
+          <textPath href="#arcTop" startOffset="50%" text-anchor="middle">UPDATED · UPDATED</textPath>
+        </text>
+        <text x="60" y="65" font-family="Special Elite, cursive" font-size="13" fill="currentColor" text-anchor="middle">${dateLabel}</text>
+      </svg>
+    `;
+  }
+
+  function render(){
+    const list = document.getElementById('fileList');
+    const footer = document.getElementById('lastUpdatedFooter');
+
+    if(!FILES.length){
+      list.innerHTML = `<div class="empty">Пока нет файлов. Добавьте их в списке FILES в коде страницы.</div>`;
+      footer.textContent = "";
+      document.getElementById('postmark').style.display = 'none';
+      return;
+    }
+
+    const updated = latestDate(FILES);
+    renderPostmark(updated);
+    footer.textContent = `Обновлено: ${updated}`;
+
+    list.innerHTML = FILES.map((f, i) => `
+      <div class="card">
+        <div class="file-main">
+          <div class="tracking">PKG-${String(i+1).padStart(3,'0')}${f.version ? ' · ' + f.version : ''}</div>
+          <div class="file-name">${f.name}</div>
+          <div class="file-meta">
+            <span>${f.date}</span>
+            <span>${f.size}</span>
+          </div>
+        </div>
+        <a class="dl-btn" href="${driveDownloadUrl(f.driveId)}" download>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/>
+          </svg>
+          Скачать
+        </a>
+      </div>
+    `).join('');
+  }
+
+  render();
+</script>
+
+</body>
+</html>
